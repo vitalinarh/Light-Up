@@ -6,20 +6,6 @@ class Cell:
         self.bulb = bulb
         self.lit = lit
 
-def Print_Grid(grid, n):
-    for i in range(n):
-        for j in range(n):
-            # print(grid[i][j].block, end="(")
-            if grid[i][j].block == 1:
-                print("X", end="")
-            elif grid[i][j].bulb == 1:
-                print("L", end="")
-            elif grid[i][j].lit > 0:
-                print("O", end="")
-            else:
-                print("-", end="")
-        print(" ")
-
 def Check(grid, n):
 
     for i in range(n):
@@ -65,8 +51,6 @@ def Solve(grid, n, num, column, line):
 
     # base case
     if Check(grid, n) == True:
-        #print(" ")
-        #Print_Grid(grid, n)
         res.append(num)
         return
 

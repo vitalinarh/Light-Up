@@ -1,14 +1,16 @@
 import pygame
 import copy
+import random
 
 res = []
 number_selected = 0
 
 BLACK = (0, 0, 0)
-WHITE = (200, 200, 200)
+GRAY = (200, 200, 200)
+WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
-BLUE = (0, 0, 128)
+BLUE = (0, 0, 200)
 
 GRID_HEIGHT = 400
 GRID_WIDTH = 400
@@ -29,7 +31,7 @@ def show_solution(grid, minimum, n):
     global number_selected
 
     number_selected = 0
-    
+
     for i in res:
         if i[0] == minimum:
             for row in range(n):
@@ -79,7 +81,7 @@ def drawGrid(grid, n):
                 pygame.draw.rect(SCREEN, WHITE, rect, 0)
                 pygame.draw.rect(SCREEN, RED, rect, 2)
             elif col.block == 0:
-                pygame.draw.rect(SCREEN, WHITE, rect, 0)
+                pygame.draw.rect(SCREEN, GRAY, rect, 0)
                 pygame.draw.rect(SCREEN, BLACK, rect, 1)
             else:
                 pygame.draw.rect(SCREEN, BLACK, rect, 0)
@@ -88,10 +90,10 @@ def drawGrid(grid, n):
         y += w
         x = 0
 
-def drawText(message, x, y):
+def drawText(message, x, y, color):
 
     font = pygame.font.Font('freesansbold.ttf', 14)
-    text = font.render(message, True, GREEN, BLUE)
+    text = font.render(message, True, color, BLACK)
 
     textRect = text.get_rect()
     textRect.center = (x, y)
@@ -163,6 +165,9 @@ def Manage_Lights(grid, line, column, n, on_off):
 def Solve(grid, n, num, column, line):
 
     # base case
+    if num > get_min():
+        return
+
     if Check(grid, n) == True:
         solution = []
         solution.append(num)
@@ -184,17 +189,21 @@ def Solve(grid, n, num, column, line):
         grid = Manage_Lights(grid, line, column, n, -1)
         Solve(grid, n, num, column + 1, line)
 
-if __name__=="__main__":
+def randomize():
 
-    line = input()
-    n = int(line)
+    n = random.randint(2, 5)
     grid = [[] for i in range(n)]
 
     for i in range(n):
         for j in range(n):
-            line = input()
-            is_block = int(line)
+            is_block = random.randint(0, 1)
             grid[i].append(Cell(is_block, 0, 0))
+
+    return (grid, n)
+
+if __name__=="__main__":
+
+    grid, n = randomize()
 
     Solve(grid, n, 0, 0, 0)
 
@@ -210,8 +219,9 @@ if __name__=="__main__":
     while True:
 
         drawGrid(grid, n)
-        drawText('Check Solution - Press "A" ', 130, 420)
-        drawText('Show Solution - Press "S" ', 127, 450)
+        drawText('Check Solution - "A" ', 130, 420, BLUE)
+        drawText('Show Solution - "S" ', 127, 450, BLUE)
+        drawText('Randomize - "R" ', 280, 450, BLUE)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -224,13 +234,21 @@ if __name__=="__main__":
 
             if event.type == pygame.KEYDOWN:
 
+                if event.key == pygame.K_r:
+                    drawText('Wait. Calculating feasible solutions', 280, 480, WHITE)
+                    res = []
+                    grid, n = randomize()
+                    Solve(grid, n, 0, 0, 0)
+                    solution = get_min()
+                    number_selected = 0
+                    SCREEN.fill(pygame.Color("black"))
+
                 if event.key == pygame.K_s:
                     grid = show_solution(grid, solution, n)
 
                 if event.key == pygame.K_a:
 
                     SCREEN.fill(pygame.Color("black"))
-
                     check = False
                     flag = 0
 
@@ -242,11 +260,13 @@ if __name__=="__main__":
                                     flag = 1
 
                         if flag == 1:
-                            drawText('Solution Checked - Correct', 135, 480)
+                            print("Correct")
+                            drawText('Solution Checked - Correct!', 200, 480, GREEN)
                         else:
-                            drawText('Solution Checked - Try Again', 135, 480)
+                            print("Wrong")
+                            drawText('Solution Checked - Try Again!', 200, 480, RED)
 
                     else:
-                        drawText('Solution Checked - Try Again', 135, 480)
+                        drawText('Solution Checked - Try Again!', 200, 480, RED)
 
         pygame.display.update()

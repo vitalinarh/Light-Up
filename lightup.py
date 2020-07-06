@@ -233,5 +233,3 @@ if __name__=="__main__":
                         drawText('Solution Checked - Try Again', 135, 450)
 
         pygame.display.update()
-
-    print(min(res))

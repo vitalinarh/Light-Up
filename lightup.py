@@ -1,6 +1,8 @@
 import pygame
+import copy
 
 res = []
+number_selected = 0
 
 BLACK = (0, 0, 0)
 WHITE = (200, 200, 200)
@@ -14,7 +16,22 @@ GRID_WIDTH = 400
 WINDOW_HEIGHT = 500
 WINDOW_WIDTH = 400
 
+def check_user_solution(grid, solution, n):
+    for row in range(n):
+        for col in range(n):
+            if grid[row][col].selected == 1 and solution[row][col].bulb == 1:
+                pass
+            elif grid[row][col].block == 1:
+                pass
+            elif grid[row][col].selected == 0 and solution[row][col].bulb == 1:
+                return False
+            elif grid[row][col].selected == 1 and solution[row][col].bulb == 0:
+                return False
+    return True
+
 def placeLightBulb(grid, pos):
+
+    global number_selected
 
     if pos[0] < GRID_WIDTH and pos[1] < GRID_HEIGHT:
 
@@ -23,8 +40,10 @@ def placeLightBulb(grid, pos):
 
         if grid[line][col].selected == 0:
             grid[line][col].selected = 1
+            number_selected += 1
         else:
             grid[line][col].selected = 0
+            number_selected -= 1
 
     return grid
 
@@ -128,7 +147,11 @@ def Solve(grid, n, num, column, line):
 
     # base case
     if Check(grid, n) == True:
-        res.append(num)
+        solution = []
+        solution.append(num)
+        copy_grid = copy.deepcopy(grid)
+        solution.append(copy_grid)
+        res.append(solution)
         return
 
     if column == n:
@@ -158,6 +181,12 @@ if __name__=="__main__":
 
     Solve(grid, n, 0, 0, 0)
 
+    solution = float('inf')
+
+    for i in res:
+        if solution > i[0]:
+            solution = i[0]
+
     global SCREEN, CLOCK
     pygame.init()
     SCREEN = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -180,9 +209,28 @@ if __name__=="__main__":
                 grid = placeLightBulb(grid, pos)
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_a:
-                    drawText('Solution Checked - Try Again', 135, 450)
 
+                if event.key == pygame.K_a:
+
+                    SCREEN.fill(pygame.Color("black"))
+
+                    check = False
+                    flag = 0
+
+                    if solution == number_selected:
+                        for i in res:
+                            if i[0] == solution:
+                                check = check_user_solution(grid, i[1], n)
+                                if check == True:
+                                    flag = 1
+
+                        if flag == 1:
+                            drawText('Solution Checked - Correct', 135, 450)
+                        else:
+                            drawText('Solution Checked - Try Again', 135, 450)
+
+                    else:
+                        drawText('Solution Checked - Try Again', 135, 450)
 
         pygame.display.update()
 

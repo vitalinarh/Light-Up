@@ -16,14 +16,35 @@ GRID_WIDTH = 400
 WINDOW_HEIGHT = 500
 WINDOW_WIDTH = 400
 
+def get_min():
+    solution = float('inf')
+
+    for i in res:
+        if solution > i[0]:
+            solution = i[0]
+
+    return solution
+
+def show_solution(grid, minimum, n):
+    global number_selected
+
+    number_selected = 0
+    
+    for i in res:
+        if i[0] == minimum:
+            for row in range(n):
+                for col in range(n):
+                    grid[row][col].selected = 0
+                    if i[1][row][col].bulb == 1 and i[1][row][col].block == 0:
+                        grid[row][col].selected = 1
+                        number_selected += 1
+            break
+    return grid
+
 def check_user_solution(grid, solution, n):
     for row in range(n):
         for col in range(n):
-            if grid[row][col].selected == 1 and solution[row][col].bulb == 1:
-                pass
-            elif grid[row][col].block == 1:
-                pass
-            elif grid[row][col].selected == 0 and solution[row][col].bulb == 1:
+            if grid[row][col].selected == 0 and solution[row][col].bulb == 1:
                 return False
             elif grid[row][col].selected == 1 and solution[row][col].bulb == 0:
                 return False
@@ -48,15 +69,12 @@ def placeLightBulb(grid, pos):
     return grid
 
 def drawGrid(grid, n):
-    x, y = 0,0
+    x, y = 0, 0
     w = GRID_WIDTH / n
 
     for row in grid:
-
         for col in row:
-
             rect = pygame.Rect(x, y, w, w)
-
             if col.selected == 1 and col.block == 0:
                 pygame.draw.rect(SCREEN, WHITE, rect, 0)
                 pygame.draw.rect(SCREEN, RED, rect, 2)
@@ -66,14 +84,13 @@ def drawGrid(grid, n):
             else:
                 pygame.draw.rect(SCREEN, BLACK, rect, 0)
                 pygame.draw.rect(SCREEN, WHITE, rect, 1)
-
             x += w
         y += w
         x = 0
 
 def drawText(message, x, y):
 
-    font = pygame.font.Font('freesansbold.ttf', 16)
+    font = pygame.font.Font('freesansbold.ttf', 14)
     text = font.render(message, True, GREEN, BLUE)
 
     textRect = text.get_rect()
@@ -181,11 +198,7 @@ if __name__=="__main__":
 
     Solve(grid, n, 0, 0, 0)
 
-    solution = float('inf')
-
-    for i in res:
-        if solution > i[0]:
-            solution = i[0]
+    solution = get_min()
 
     global SCREEN, CLOCK
     pygame.init()
@@ -198,6 +211,7 @@ if __name__=="__main__":
 
         drawGrid(grid, n)
         drawText('Check Solution - Press "A" ', 130, 420)
+        drawText('Show Solution - Press "S" ', 127, 450)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -209,6 +223,9 @@ if __name__=="__main__":
                 grid = placeLightBulb(grid, pos)
 
             if event.type == pygame.KEYDOWN:
+
+                if event.key == pygame.K_s:
+                    grid = show_solution(grid, solution, n)
 
                 if event.key == pygame.K_a:
 
@@ -225,11 +242,11 @@ if __name__=="__main__":
                                     flag = 1
 
                         if flag == 1:
-                            drawText('Solution Checked - Correct', 135, 450)
+                            drawText('Solution Checked - Correct', 135, 480)
                         else:
-                            drawText('Solution Checked - Try Again', 135, 450)
+                            drawText('Solution Checked - Try Again', 135, 480)
 
                     else:
-                        drawText('Solution Checked - Try Again', 135, 450)
+                        drawText('Solution Checked - Try Again', 135, 480)
 
         pygame.display.update()

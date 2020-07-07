@@ -11,8 +11,3 @@ To run the project:
   python lightup.py
 ```
 
-## Input
-Then input should be the following:
-The first line should be the size of the square grid.
-Next to that, insert 0 or 1, 0 is a blank cell, and 1 is a block, then repeat for all blocks.
-

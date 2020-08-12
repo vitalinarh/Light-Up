@@ -18,7 +18,7 @@ $ git clone https://github.com/vitalinarh/Lights-Up
 $ cd Lights-Up
 
 # Install dependencies
-$ python -m pip -r requirements
+$ pip install -r requirements.txt 
 
 ```
 
